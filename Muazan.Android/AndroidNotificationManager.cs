@@ -41,7 +41,7 @@ namespace Muazan.Droid
             }
         }
 
-        public void SendNotification(string title, string message, DateTime? notifyTime = null)
+        public void SendNotification(string title, string message, bool isFajr, DateTime? notifyTime = null)
         {
             if (!channelInitialized)
             {
@@ -61,21 +61,22 @@ namespace Muazan.Droid
             }
             else
             {
-                Show(title, message);
+                Show(title, message, isFajr);
             }
         }
 
-        public void ReceiveNotification(string title, string message)
+        public void ReceiveNotification(string title, string message, bool isFajr)
         {
             var args = new NotificationEventArgs()
             {
                 Title = title,
                 Message = message,
+                IsFajr = isFajr,
             };
             NotificationReceived?.Invoke(null, args);
         }
 
-        public void Show(string title, string message)
+        public void Show(string title, string message, bool isFajr)
         {
             Intent intent = new Intent(AndroidApp.Context, typeof(MainActivity));
             intent.PutExtra(TitleKey, title);
@@ -83,9 +84,16 @@ namespace Muazan.Droid
 
             PendingIntent pendingIntent = PendingIntent.GetActivity(AndroidApp.Context, pendingIntentId++, intent, PendingIntentFlags.UpdateCurrent);
 
+            // Set custom push notification sound.
+            var pathToPushSound = isFajr
+                ? $"{ContentResolver.SchemeAndroidResource}://{AndroidApp.Context.PackageName}/{Resource.Raw.FajrAdhanMakkah}"
+                : $"{ContentResolver.SchemeAndroidResource}://{AndroidApp.Context.PackageName}/{Resource.Raw.AdhanMakkah}";
+            var soundUri = Android.Net.Uri.Parse(pathToPushSound);
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(AndroidApp.Context, channelId)
                 .SetContentIntent(pendingIntent)
                 .SetContentTitle(title)
+                .SetSound(soundUri)
                 .SetContentText(message)
                 .SetLargeIcon(BitmapFactory.DecodeResource(AndroidApp.Context.Resources, Resource.Drawable.xamagonBlue))
                 .SetSmallIcon(Resource.Drawable.xamagonBlue)

@@ -39,7 +39,8 @@ namespace Muazan.Droid
             {
                 string title = intent.GetStringExtra(AndroidNotificationManager.TitleKey);
                 string message = intent.GetStringExtra(AndroidNotificationManager.MessageKey);
-                DependencyService.Get<INotificationManager>().ReceiveNotification(title, message);
+                bool isFajr = message.Contains("Fajr");
+                DependencyService.Get<INotificationManager>().ReceiveNotification(title, message, isFajr);
             }
         }
 

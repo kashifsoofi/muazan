@@ -12,9 +12,10 @@ namespace Muazan.Droid
             {
                 string title = intent.GetStringExtra(AndroidNotificationManager.TitleKey);
                 string message = intent.GetStringExtra(AndroidNotificationManager.MessageKey);
+                bool isFajr = message.Contains("Fajr");
 
                 AndroidNotificationManager manager = AndroidNotificationManager.Instance ?? new AndroidNotificationManager();
-                manager.Show(title, message);
+                manager.Show(title, message, isFajr);
             }
         }
     }

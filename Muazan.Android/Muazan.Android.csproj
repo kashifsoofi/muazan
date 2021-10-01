@@ -88,19 +88,24 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
+    <AndroidResource Include="Resources\raw\AdhanMakkah.mp3">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\raw\FajrAdhanMakkah.mp3">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
+    <Folder Include="Resources\raw\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Muazan\Muazan.csproj">
       <Project>{BE2DD174-D3FD-4109-86D3-E35FBE90DA8A}</Project>
       <Name>Muazan</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Adhan-Makkah.mp3" />
-    <AndroidAsset Include="Assets\Fajr-Adhan-Makkah.mp3" />
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
