@@ -40,7 +40,7 @@ namespace Muazan
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message);
+            notificationManager.SendNotification(title, message, true);
         }
 
         void OnScheduleClick(System.Object sender, System.EventArgs e)
@@ -48,7 +48,7 @@ namespace Muazan
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message, DateTime.Now.AddSeconds(10));
+            notificationManager.SendNotification(title, message, false, DateTime.Now.AddSeconds(10));
         }
 
         private void PlayAdhan(bool isFajr)

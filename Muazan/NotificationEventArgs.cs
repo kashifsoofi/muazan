@@ -5,5 +5,6 @@ namespace Muazan
     {
         public string Title { get; set; }
         public string Message { get; set; }
+        public bool IsFajr { get; set; }
     }
 }
