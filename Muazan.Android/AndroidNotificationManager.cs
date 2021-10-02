@@ -2,6 +2,7 @@
 using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.Media;
 using Android.OS;
 using AndroidX.Core.App;
 using Muazan.Droid;
@@ -13,14 +14,16 @@ namespace Muazan.Droid
 {
     public class AndroidNotificationManager : INotificationManager
     {
-        const string channelId = "default";
-        const string channelName = "Default";
-        const string channelDescription = "The default channel for notifications.";
+        const string FajrAdhanChannelId = "fajradhan";
+        const string FajrAdhanChannelName = "FajrAdhan";
+        const string AdhanChannelId = "adhan";
+        const string AdhanChannelName = "Adhan";
+        const string ChannelDescription = "Channel for adhan notifications.";
 
         public const string TitleKey = "title";
         public const string MessageKey = "message";
 
-        bool channelInitialized = false;
+        bool channelsInitialized = false;
         int messageId = 0;
         int pendingIntentId = 0;
 
@@ -36,16 +39,16 @@ namespace Muazan.Droid
         {
             if (Instance == null)
             {
-                CreateNotificationChannel();
+                CreateNotificationChannels();
                 Instance = this;
             }
         }
 
         public void SendNotification(string title, string message, bool isFajr, DateTime? notifyTime = null)
         {
-            if (!channelInitialized)
+            if (!channelsInitialized)
             {
-                CreateNotificationChannel();
+                CreateNotificationChannels();
             }
 
             if (notifyTime != null)
@@ -84,16 +87,12 @@ namespace Muazan.Droid
 
             PendingIntent pendingIntent = PendingIntent.GetActivity(AndroidApp.Context, pendingIntentId++, intent, PendingIntentFlags.UpdateCurrent);
 
-            // Set custom push notification sound.
-            var pathToPushSound = isFajr
-                ? $"{ContentResolver.SchemeAndroidResource}://{AndroidApp.Context.PackageName}/{Resource.Raw.FajrAdhanMakkah}"
-                : $"{ContentResolver.SchemeAndroidResource}://{AndroidApp.Context.PackageName}/{Resource.Raw.AdhanMakkah}";
-            var soundUri = Android.Net.Uri.Parse(pathToPushSound);
+            var channelId = isFajr ? FajrAdhanChannelId : AdhanChannelId;
 
+            // Set custom push notification sound.
             NotificationCompat.Builder builder = new NotificationCompat.Builder(AndroidApp.Context, channelId)
                 .SetContentIntent(pendingIntent)
                 .SetContentTitle(title)
-                .SetSound(soundUri)
                 .SetContentText(message)
                 .SetLargeIcon(BitmapFactory.DecodeResource(AndroidApp.Context.Resources, Resource.Drawable.xamagonBlue))
                 .SetSmallIcon(Resource.Drawable.xamagonBlue)
@@ -103,21 +102,47 @@ namespace Muazan.Droid
             manager.Notify(messageId++, notification);
         }
 
-        void CreateNotificationChannel()
+        void CreateNotificationChannels()
         {
-            manager = (NotificationManager)AndroidApp.Context.GetSystemService(AndroidApp.NotificationService);
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                var channelNameJava = new Java.Lang.String(channelName);
-                var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
-                {
-                    Description = channelDescription
-                };
-                manager.CreateNotificationChannel(channel);
+                CreateNotificationChannel(
+                    FajrAdhanChannelId,
+                    FajrAdhanChannelName,
+                    true);
+                CreateNotificationChannel(
+                    AdhanChannelId,
+                    AdhanChannelName,
+                    false);
             }
 
-            channelInitialized = true;
+            channelsInitialized = true;
+        }
+
+        void CreateNotificationChannel(
+            string channelId,
+            string channelName,
+            bool isFajr)
+        {
+            var channelNameJava = new Java.Lang.String(channelName);
+            var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
+            {
+                Description = ChannelDescription
+            };
+
+            var audioattributes = new AudioAttributes.Builder();
+            audioattributes.SetContentType(AudioContentType.Music);
+            audioattributes.SetUsage(AudioUsageKind.Notification);
+
+            var pathToSoundFile = isFajr
+                ? $"android.resource://{AndroidApp.Context.PackageName}/{Resource.Raw.FajrAdhanMakkah}"
+                : $"android.resource://{AndroidApp.Context.PackageName}/{Resource.Raw.AdhanMakkah}";
+            var soundUri = Android.Net.Uri.Parse(pathToSoundFile);
+            channel.SetSound(soundUri, audioattributes.Build());
+
+            manager = (NotificationManager)AndroidApp.Context.GetSystemService(AndroidApp.NotificationService);
+            manager.CreateNotificationChannel(channel);
         }
 
         long GetNotifyTime(DateTime notifyTime)
