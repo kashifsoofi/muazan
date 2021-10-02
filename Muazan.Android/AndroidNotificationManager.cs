@@ -126,20 +126,21 @@ namespace Muazan.Droid
             bool isFajr)
         {
             var channelNameJava = new Java.Lang.String(channelName);
-            var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
+            var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.High)
             {
                 Description = ChannelDescription
             };
 
-            var audioattributes = new AudioAttributes.Builder();
-            audioattributes.SetContentType(AudioContentType.Music);
-            audioattributes.SetUsage(AudioUsageKind.Notification);
+            var audioattributes = new AudioAttributes.Builder()
+                .SetContentType(AudioContentType.Sonification)
+                .SetUsage(AudioUsageKind.Notification)
+                .Build();
 
             var pathToSoundFile = isFajr
                 ? $"android.resource://{AndroidApp.Context.PackageName}/{Resource.Raw.FajrAdhanMakkah}"
                 : $"android.resource://{AndroidApp.Context.PackageName}/{Resource.Raw.AdhanMakkah}";
             var soundUri = Android.Net.Uri.Parse(pathToSoundFile);
-            channel.SetSound(soundUri, audioattributes.Build());
+            channel.SetSound(soundUri, audioattributes);
 
             manager = (NotificationManager)AndroidApp.Context.GetSystemService(AndroidApp.NotificationService);
             manager.CreateNotificationChannel(channel);
