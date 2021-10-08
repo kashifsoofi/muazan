@@ -1,7 +1,7 @@
 ﻿using System;
 using Android.Content;
 
-namespace Muazan.Droid
+namespace Muazun.Droid
 {
     [BroadcastReceiver(Enabled = true, Label = "Local Notifications Broadcast Receiver")]
     public class AlarmHandler : BroadcastReceiver

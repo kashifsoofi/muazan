@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.810.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muazan", "Muazan\Muazan.csproj", "{BE2DD174-D3FD-4109-86D3-E35FBE90DA8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muazun", "Muazun\Muazun.csproj", "{BE2DD174-D3FD-4109-86D3-E35FBE90DA8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muazan.Android", "Muazan.Android\Muazan.Android.csproj", "{EF1C6563-039E-453F-B46E-59C23CDA35CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muazun.Android", "Muazun.Android\Muazun.Android.csproj", "{EF1C6563-039E-453F-B46E-59C23CDA35CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

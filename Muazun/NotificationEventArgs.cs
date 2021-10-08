@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Muazan
+namespace Muazun
 {
     public class NotificationEventArgs : EventArgs
     {

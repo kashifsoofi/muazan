@@ -5,12 +5,12 @@ using Android.Graphics;
 using Android.Media;
 using Android.OS;
 using AndroidX.Core.App;
-using Muazan.Droid;
+using Muazun.Droid;
 using Xamarin.Forms;
 using AndroidApp = Android.App.Application;
 
 [assembly: Dependency(typeof(AndroidNotificationManager))]
-namespace Muazan.Droid
+namespace Muazun.Droid
 {
     public class AndroidNotificationManager : INotificationManager
     {

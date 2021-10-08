@@ -7,10 +7,10 @@ using Android.OS;
 using Android.Content;
 using Xamarin.Forms;
 
-namespace Muazan.Droid
+namespace Muazun.Droid
 {
     [Activity(
-        Label = "Muazan",
+        Label = "Muazun",
         Icon = "@mipmap/icon",
         Theme = "@style/MainTheme",
         MainLauncher = true,

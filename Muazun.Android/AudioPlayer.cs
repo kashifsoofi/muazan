@@ -1,9 +1,9 @@
 ﻿using Android.Media;
-using Muazan.Droid;
+using Muazun.Droid;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(AudioPlayer))]
-namespace Muazan.Droid
+namespace Muazun.Droid
 {
     public class AudioPlayer : IAudioPlayer
     {

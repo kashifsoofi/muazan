@@ -23,7 +23,7 @@ PLEASE DO NOT REMOVE THIS COPYRIGHT BLOCK.
 */
 
 using System;
-namespace Muazan
+namespace Muazun
 {
     public class NamazTime
     {

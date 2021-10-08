@@ -1,4 +1,4 @@
-﻿namespace Muazan
+﻿namespace Muazun
 {
     public interface IAudioPlayer
     {
