@@ -1,7 +1,7 @@
 ﻿using System;
-namespace Muazun
+namespace Muazun.Services
 {
-    public interface INotificationManager
+    public interface INotificationService
     {
         event EventHandler NotificationReceived;
         void Initialize();

@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Muazun.Services;
 using Xamarin.Forms;
 
 namespace Muazun
 {
     public partial class MainPage : ContentPage
     {
-        INotificationManager notificationManager;
+        INotificationService notificationService;
         int notificationNumber = 0;
 
         public MainPage()
         {
             InitializeComponent();
 
-            notificationManager = DependencyService.Get<INotificationManager>();
-            notificationManager.NotificationReceived += (sender, eventArgs) =>
+            notificationService = DependencyService.Get<INotificationService>();
+            notificationService.NotificationReceived += (sender, eventArgs) =>
             {
                 var evtData = (NotificationEventArgs)eventArgs;
                 ShowNotification(evtData.Title, evtData.Message);
@@ -40,7 +36,7 @@ namespace Muazun
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message, true);
+            notificationService.SendNotification(title, message, true);
         }
 
         void OnScheduleClick(System.Object sender, System.EventArgs e)
@@ -48,14 +44,14 @@ namespace Muazun
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message, false, DateTime.Now.AddSeconds(10));
+            notificationService.SendNotification(title, message, false, DateTime.Now.AddSeconds(10));
         }
 
         private void PlayAdhan(bool isFajr)
         {
             var prefix = isFajr ? "Fajr-" : "";
             var fileName = $"{prefix}Adhan-Makkah.mp3";
-            DependencyService.Get<IAudioPlayer>().PlayAudioFile(fileName);
+            DependencyService.Get<IAudioService>().PlayAudioFile(fileName);
         }
 
         private void ShowNotification(string title, string message)

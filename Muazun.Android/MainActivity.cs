@@ -6,6 +6,8 @@ using Android.Runtime;
 using Android.OS;
 using Android.Content;
 using Xamarin.Forms;
+using Muazun.Services;
+using Muazun.Droid.Services;
 
 namespace Muazun.Droid
 {
@@ -37,10 +39,10 @@ namespace Muazun.Droid
         {
             if (intent?.Extras != null)
             {
-                string title = intent.GetStringExtra(AndroidNotificationManager.TitleKey);
-                string message = intent.GetStringExtra(AndroidNotificationManager.MessageKey);
+                string title = intent.GetStringExtra(AndroidNotificationService.TitleKey);
+                string message = intent.GetStringExtra(AndroidNotificationService.MessageKey);
                 bool isFajr = message.Contains("Fajr");
-                DependencyService.Get<INotificationManager>().ReceiveNotification(title, message, isFajr);
+                DependencyService.Get<INotificationService>().ReceiveNotification(title, message, isFajr);
             }
         }
 

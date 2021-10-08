@@ -5,14 +5,15 @@ using Android.Graphics;
 using Android.Media;
 using Android.OS;
 using AndroidX.Core.App;
-using Muazun.Droid;
+using Muazun.Droid.Services;
+using Muazun.Services;
 using Xamarin.Forms;
 using AndroidApp = Android.App.Application;
 
-[assembly: Dependency(typeof(AndroidNotificationManager))]
-namespace Muazun.Droid
+[assembly: Dependency(typeof(AndroidNotificationService))]
+namespace Muazun.Droid.Services
 {
-    public class AndroidNotificationManager : INotificationManager
+    public class AndroidNotificationService : INotificationService
     {
         const string FajrAdhanChannelId = "fajradhan";
         const string FajrAdhanChannelName = "FajrAdhan";
@@ -31,9 +32,9 @@ namespace Muazun.Droid
 
         public event EventHandler NotificationReceived;
 
-        public static AndroidNotificationManager Instance { get; private set; }
+        public static AndroidNotificationService Instance { get; private set; }
 
-        public AndroidNotificationManager() => Initialize();
+        public AndroidNotificationService() => Initialize();
 
         public void Initialize()
         {
