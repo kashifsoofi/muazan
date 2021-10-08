@@ -5,30 +5,59 @@
 
     <StackLayout>
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
-            <Label Text="Welcome to Xamarin.Forms!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+            <Label Text="Muazun" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
-        <Button Text="Play Fajr Adhan" Clicked="OnPlayFajrAdhanClicked" />
-        <Button Text="Play Adhan" Clicked="OnPlayAdhanClicked" />
         <Label Text="Start developing now" FontSize="Title" Padding="30,10,30,10"/>
         <Label Text="Make changes to your XAML file and save to see your UI update in the running app with XAML Hot Reload. Give it a try!" FontSize="16" Padding="30,0,30,0"/>
+        <Label x:Name="lblCurrentDate" Padding="30,0,30,0" />
         <StackLayout Margin="0,35,0,0" x:Name="stackLayout">
-            <Label Text="Click the button below to create a local notification."
-                   TextColor="Red"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Start" />
-            <Button Text="Create Notification"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Start"
-                    Clicked="OnSendClick" />
-            <Label Text="Click the button below to schedule a local notification for in 10 seconds time."
-                   TextColor="Red"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Start" />
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Fajr" />
+                <Label x:Name="lblFajr" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Sunrise" />
+                <Label x:Name="lblSunrise" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Dhuhr" />
+                <Label x:Name="lblDhuhr" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Asr" />
+                <Label x:Name="lblAsr" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Sunset" />
+                <Label x:Name="lblSunset" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Maghrib" />
+                <Label x:Name="lblMaghrib" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Isha" />
+                <Label x:Name="lblIsha" />
+            </StackLayout>
             <Button Text="Create Notification"
                     HorizontalOptions="Center"
                     VerticalOptions="Start"
                     Clicked="OnScheduleClick" />
+            <Button Text="Get Location"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"
+                    Clicked="OnGetLocationClick" />
         </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Label>Latitude</Label>
+            <Label x:Name="lblLatitude"></Label>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Label>Longitude</Label>
+            <Label x:Name="lblLongitude"></Label>
+        </StackLayout>
+        <Button Text="Play Fajr Adhan" Clicked="OnPlayFajrAdhanClicked" />
+        <Button Text="Play Adhan" Clicked="OnPlayAdhanClicked" />
         <Label FontSize="16" Padding="30,24,30,0">
             <Label.FormattedText>
                 <FormattedString>
