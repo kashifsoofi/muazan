@@ -27,6 +27,7 @@ namespace Muazun
         {
             base.OnAppearing();
 
+            var curentDateUtc = DateTime.UtcNow;
             var currentDate = DateTime.Now;
             lblCurrentDate.Text = currentDate.ToLongDateString();
 
@@ -35,8 +36,9 @@ namespace Muazun
             namazTime.SetCalcMethod(2);
             namazTime.SetAsrMethod(0);
 
-            var tz = (DateTime.UtcNow - currentDate).Hours;
-            var times = namazTime.GetDatePrayerTimes(currentDate.Year, currentDate.Month, currentDate.Day, location.Longitude, location.Latitude, tz);
+            var diff = currentDate - curentDateUtc;
+            var tz = diff.Hours;
+            var times = namazTime.GetDatePrayerTimes(currentDate.Year, currentDate.Month, currentDate.Day, location.Latitude, location.Longitude, tz);
             lblFajr.Text = times[0];
             lblSunrise.Text = times[1];
             lblDhuhr.Text = times[2];
