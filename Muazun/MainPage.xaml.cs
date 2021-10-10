@@ -1,61 +1,92 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Muazun.Services;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Muazun
 {
     public partial class MainPage : ContentPage
     {
-        INotificationManager notificationManager;
+        INotificationService notificationService;
         int notificationNumber = 0;
 
         public MainPage()
         {
             InitializeComponent();
 
-            notificationManager = DependencyService.Get<INotificationManager>();
-            notificationManager.NotificationReceived += (sender, eventArgs) =>
+            notificationService = DependencyService.Get<INotificationService>();
+            notificationService.NotificationReceived += (sender, eventArgs) =>
             {
                 var evtData = (NotificationEventArgs)eventArgs;
                 ShowNotification(evtData.Title, evtData.Message);
             };
         }
 
-        public void OnPlayFajrAdhanClicked(System.Object sender, System.EventArgs e)
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            var curentDateUtc = DateTime.UtcNow;
+            var currentDate = DateTime.Now;
+            lblCurrentDate.Text = currentDate.ToLongDateString();
+
+            var location = Geolocation.GetLastKnownLocationAsync().GetAwaiter().GetResult();
+            var namazTime = new NamazTime();
+            namazTime.SetCalcMethod(2);
+            namazTime.SetAsrMethod(0);
+
+            var diff = currentDate - curentDateUtc;
+            var tz = diff.Hours;
+            var times = namazTime.GetDatePrayerTimes(currentDate.Year, currentDate.Month, currentDate.Day, location.Latitude, location.Longitude, tz);
+            lblFajr.Text = times[0];
+            lblSunrise.Text = times[1];
+            lblDhuhr.Text = times[2];
+            lblAsr.Text = times[3];
+            lblSunset.Text = times[4];
+            lblMaghrib.Text = times[5];
+            lblIsha.Text = times[6];
+
+            // Set notification for next namaz
+            // notificationService.SendNotification("Namaz", "Time for Namaz", false, DateTime.Now.AddSeconds(10));
+        }
+
+        public void OnPlayFajrAdhanClicked(object sender, EventArgs e)
         {
             PlayAdhan(true);
         }
 
-        void OnPlayAdhanClicked(System.Object sender, System.EventArgs e)
+        void OnPlayAdhanClicked(object sender, EventArgs e)
         {
             PlayAdhan(false);
         }
 
-        void OnSendClick(System.Object sender, System.EventArgs e)
+        void OnSendClick(object sender, EventArgs e)
         {
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message, true);
+            notificationService.SendNotification(title, message, true);
         }
 
-        void OnScheduleClick(System.Object sender, System.EventArgs e)
+        void OnScheduleClick(object sender, EventArgs e)
         {
             notificationNumber++;
             string title = $"Local Notification #{notificationNumber}";
             string message = $"You have now received {notificationNumber} notifications!";
-            notificationManager.SendNotification(title, message, false, DateTime.Now.AddSeconds(10));
+            notificationService.SendNotification(title, message, false, DateTime.Now.AddSeconds(10));
+        }
+
+        async void OnGetLocationClick(object sender, EventArgs e)
+        {
+            await GetLocation();
         }
 
         private void PlayAdhan(bool isFajr)
         {
             var prefix = isFajr ? "Fajr-" : "";
             var fileName = $"{prefix}Adhan-Makkah.mp3";
-            DependencyService.Get<IAudioPlayer>().PlayAudioFile(fileName);
+            DependencyService.Get<IAudioService>().PlayAudioFile(fileName);
         }
 
         private void ShowNotification(string title, string message)
@@ -68,6 +99,32 @@ namespace Muazun
                 };
                 stackLayout.Children.Add(msg);
             });
+        }
+
+        async Task GetLocation()
+        {
+            try
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+                var location = await Geolocation.GetLocationAsync(request);
+                if (location != null)
+                {
+                    lblLatitude.Text = location.Latitude.ToString();
+                    lblLongitude.Text = location.Longitude.ToString();
+                }
+            }
+            catch (FeatureNotSupportedException ex)
+            {
+                await DisplayAlert("Failed", ex.Message, "OK");
+            }
+            catch (PermissionException ex)
+            {
+                await DisplayAlert("Failed", ex.Message, "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Failed", ex.Message, "OK");
+            }
         }
     }
 }

@@ -554,7 +554,7 @@ namespace Muazun
 			y = cc.Year;
 			m = cc.Month;
 			d = cc.Day;
-			tz = TimeZone.CurrentTimeZone.GetUtcOffset(new DateTime(y, m, d)).Hours;
+			tz = (DateTime.UtcNow - DateTime.Now).Hours;
 			String[] s;
 
 			p.SetCalcMethod(2);
