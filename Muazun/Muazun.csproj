@@ -17,8 +17,10 @@
   <ItemGroup>
     <None Remove="Audio\" />
     <None Remove="Xam.Plugin.Geolocator" />
+    <None Remove="ViewModel\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 </Project>
