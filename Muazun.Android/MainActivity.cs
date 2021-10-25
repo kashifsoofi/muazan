@@ -1,13 +1,12 @@
-﻿using System;
-
+﻿
 using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.OS;
 using Android.Content;
-using Xamarin.Forms;
-using Muazun.Services;
+using Android.Content.PM;
+using Android.OS;
+using Android.Runtime;
 using Muazun.Droid.Services;
+using Muazun.Services;
+using Xamarin.Forms;
 
 namespace Muazun.Droid
 {

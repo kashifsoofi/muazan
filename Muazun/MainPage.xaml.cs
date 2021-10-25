@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Muazun.NamazTime;
 using Muazun.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -32,13 +33,15 @@ namespace Muazun
             lblCurrentDate.Text = currentDate.ToLongDateString();
 
             var location = Geolocation.GetLastKnownLocationAsync().GetAwaiter().GetResult();
-            var namazTime = new NamazTime();
-            namazTime.SetCalcMethod(2);
-            namazTime.SetAsrMethod(0);
+
+            var namazTimeCalculator = new NamazTimeCalculatorBuilder()
+                .WithCalculationMethod(CalculationMethod.ISNA)
+                .WithAsarMethod(JuristicMethod.Shafii)
+                .Build();
 
             var diff = currentDate - curentDateUtc;
             var tz = diff.Hours;
-            var times = namazTime.GetDatePrayerTimes(currentDate.Year, currentDate.Month, currentDate.Day, location.Latitude, location.Longitude, tz);
+            var times = namazTimeCalculator.GetDatePrayerTimes(currentDate.Year, currentDate.Month, currentDate.Day, location.Latitude, location.Longitude, tz);
             lblFajr.Text = times[0];
             lblSunrise.Text = times[1];
             lblDhuhr.Text = times[2];

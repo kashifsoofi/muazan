@@ -23,21 +23,14 @@ PLEASE DO NOT REMOVE THIS COPYRIGHT BLOCK.
 */
 
 using System;
-namespace Muazun
+using System.Collections.Generic;
+
+namespace Muazun.NamazTime
 {
-    public class NamazTime
+
+    public class NamazTimeCalculator
     {
 		//------------------------ Constants --------------------------
-
-		// Calculation Methods
-		public static int Jafari = 0;    // Ithna Ashari
-		public static int Karachi = 1;    // University of Islamic Sciences, Karachi
-		public static int ISNA = 2;    // Islamic Society of North America (ISNA)
-		public static int MWL = 3;    // Muslim World League (MWL)
-		public static int Makkah = 4;    // Umm al-Qura, Makkah
-		public static int Egypt = 5;    // Egyptian General Authority of Survey
-		public static int Custom = 6;    // Custom Setting
-		public static int Tehran = 7;    // Institute of Geophysics, University of Tehran
 
 		// Juristic Methods
 		public static int Shafii = 0;    // Shafii (standard)
@@ -49,25 +42,18 @@ namespace Muazun
 		public static int OneSeventh = 2;    // 1/7th of night
 		public static int AngleBased = 3;    // angle/60th of night
 
-
-		// Time Formats
-		public static int Time24 = 0;    // 24-hour format
-		public static int Time12 = 1;    // 12-hour format
-		public static int Time12NS = 2;    // 12-hour format with no suffix
-		public static int Floating = 3;    // floating point number
-
 		// Time Names
 		public static string[] TimeNames = { "Fajr", "Sunrise", "Dhuhr", "Asr", "Sunset", "Maghrib", "Isha" };
 		static string InvalidTime = "----";  // The string used for inv
 
 		//---------------------- Global Variables --------------------
 
-		private int calcMethod = 3;     // caculation method
-		private int asrJuristic;        // Juristic method for Asr
+		private readonly CalculationMethod calculationMethod;     // caculation method
+		private readonly JuristicMethod asarJuristic;        // Juristic method for Asr
 		private int dhuhrMinutes = 0;       // minutes after mid-day for Dhuhr
 		private int adjustHighLats = 1; // adjusting method for higher latitudes
 
-		private int timeFormat = 0;     // time format
+		private readonly TimeFormat timeFormat;     // time format
 
 		private double lat;        // latitude
 		private double lng;        // longitude
@@ -85,20 +71,27 @@ namespace Muazun
 
 		//------------------- Calc Method Parameters --------------------
 
-		private double[][] methodParams;
+		private Dictionary<CalculationMethod, double[]> methodParameters = new Dictionary<CalculationMethod, double[]>
+		{
+			[CalculationMethod.Jafari] = new double[] { 16, 0, 4, 0, 14 },
+			[CalculationMethod.Karachi] = new double[] { 18, 1, 0, 0, 18 },
+			[CalculationMethod.ISNA] = new double[] { 15, 1, 0, 0, 15 },
+			[CalculationMethod.MWL] = new double[] { 18, 1, 0, 0, 17 },
+			[CalculationMethod.Makkah] = new double[] { 18.5, 1, 0, 1, 90 },
+			[CalculationMethod.Egypt] = new double[] { 19.5, 1, 0, 0, 17.5 },
+			[CalculationMethod.Tehran] = new double[] { 17.7, 0, 4.5, 0, 14 },
+			[CalculationMethod.Custom] = new double[] { 18, 1, 0, 0, 17 },
+		};
 
-		public NamazTime()
+		public NamazTimeCalculator(
+			CalculationMethod calculationMethod,
+			JuristicMethod juristicMethod,
+			TimeFormat timeFormat)
         {
 			times = new int[7];
-			methodParams = new double[8][];
-			this.methodParams[Jafari] = new double[] { 16, 0, 4, 0, 14 };
-			this.methodParams[Karachi] = new double[] { 18, 1, 0, 0, 18 };
-			this.methodParams[ISNA] = new double[] { 15, 1, 0, 0, 15 };
-			this.methodParams[MWL] = new double[] { 18, 1, 0, 0, 17 };
-			this.methodParams[Makkah] = new double[] { 18.5, 1, 0, 1, 90 };
-			this.methodParams[Egypt] = new double[] { 19.5, 1, 0, 0, 17.5 };
-			this.methodParams[Tehran] = new double[] { 17.7, 0, 4.5, 0, 14 };
-			this.methodParams[Custom] = new double[] { 18, 1, 0, 0, 17 };
+			this.calculationMethod = calculationMethod;
+			this.asarJuristic = juristicMethod;
+			this.timeFormat = timeFormat;
 		}
 
 		// return prayer times for a given date
@@ -111,20 +104,6 @@ namespace Muazun
 			int timeZone)
 		{
 			return this.GetDatePrayerTimes(year, month + 1, day, latitude, longitude, timeZone);
-		}
-
-		// set the calculation method
-		public void SetCalcMethod(int methodID)
-		{
-			this.calcMethod = methodID;
-		}
-
-		// set the juristic method for Asr
-		public void SetAsrMethod(int methodID)
-		{
-			if (methodID < 0 || methodID > 1)
-				return;
-			this.asrJuristic = methodID;
 		}
 
 		// set the angle for calculating Fajr
@@ -169,23 +148,17 @@ namespace Muazun
 			for (int i = 0; i < 5; i++)
 			{
 				if (param[i] == -1)
-					this.methodParams[Custom][i] = this.methodParams[this.calcMethod][i];
+					this.methodParameters[CalculationMethod.Custom][i] = this.methodParameters[this.calculationMethod][i];
 				else
-					this.methodParams[Custom][i] = param[i];
+					this.methodParameters[CalculationMethod.Custom][i] = param[i];
 			}
-			this.calcMethod = Custom;
+			// TODO: this.calculationMethod = CalculationMethod.Custom;
 		}
 
 		// set adjusting method for higher latitudes
 		public void SetHighLatsMethod(int methodID)
 		{
 			this.adjustHighLats = methodID;
-		}
-
-		// set the time format
-		public void SetTimeFormat(int timeFormat)
-		{
-			this.timeFormat = timeFormat;
 		}
 
 		// convert float hours to 24h format
@@ -285,8 +258,9 @@ namespace Muazun
 		}
 
 		// compute the time of Asr
-		public double ComputeAsr(int step, double t)  // Shafii: step=1, Hanafi: step=2
+		public double ComputeAsr(double t)  // Shafii: step=1, Hanafi: step=2
 		{
+			var step = (int)this.asarJuristic;
 			double D = this.SunDeclination(this.JDate + t);
 			double G = -this.darccot(step + this.dtan(Math.Abs(this.lat - D)));
 			return this.ComputeTime(G, t);
@@ -299,13 +273,13 @@ namespace Muazun
 		{
 			double[] t = this.DayPortion(times);
 
-			double fajr = this.ComputeTime(180 - this.methodParams[this.calcMethod][0], t[0]);
+			double fajr = this.ComputeTime(180 - this.methodParameters[this.calculationMethod][0], t[0]);
 			double sunrise = this.ComputeTime(180 - 0.833, t[1]);
 			double dhuhr = this.ComputeMidDay(t[2]);
-			double asr = this.ComputeAsr(1 + this.asrJuristic, t[3]);
+			double asr = this.ComputeAsr(t[3]);
 			double sunset = this.ComputeTime(0.833, t[4]); ;
-			double maghrib = this.ComputeTime(this.methodParams[this.calcMethod][2], t[5]);
-			double isha = this.ComputeTime(this.methodParams[this.calcMethod][4], t[6]);
+			double maghrib = this.ComputeTime(this.methodParameters[this.calculationMethod][2], t[5]);
+			double isha = this.ComputeTime(this.methodParameters[this.calculationMethod][4], t[6]);
 
 			return new double[] { fajr, sunrise, dhuhr, asr, sunset, maghrib, isha };
 		}
@@ -316,21 +290,21 @@ namespace Muazun
 			double nightTime = this.GetTimeDifference(times[4], times[1]); // sunset to sunrise
 
 			// Adjust Fajr
-			double FajrDiff = this.NightPortion(this.methodParams[this.calcMethod][0]) * nightTime;
+			double FajrDiff = this.NightPortion(this.methodParameters[this.calculationMethod][0]) * nightTime;
 			if (this.GetTimeDifference(times[0], times[1]) > FajrDiff)
 				times[0] = times[1] - FajrDiff;
 
 			// Adjust Isha
-			double IshaAngle = (this.methodParams[this.calcMethod][3] == 0)
-				? this.methodParams[this.calcMethod][4]
+			double IshaAngle = (this.methodParameters[this.calculationMethod][3] == 0)
+				? this.methodParameters[this.calculationMethod][4]
 				: 18;
 			double IshaDiff = this.NightPortion(IshaAngle) * nightTime;
 			if (this.GetTimeDifference(times[4], times[6]) > IshaDiff)
 				times[6] = times[4] + IshaDiff;
 
 			// Adjust Maghrib
-			double MaghribAngle = (methodParams[this.calcMethod][1] == 0)
-				? this.methodParams[this.calcMethod][2]
+			double MaghribAngle = (methodParameters[this.calculationMethod][1] == 0)
+				? this.methodParameters[this.calculationMethod][2]
 				: 4;
 			double MaghribDiff = this.NightPortion(MaghribAngle) * nightTime;
 			if (this.GetTimeDifference(times[4], times[5]) > MaghribDiff)
@@ -385,10 +359,10 @@ namespace Muazun
 				times[i] += this.timeZone - this.lng / 15;
 			}
 			times[2] += this.dhuhrMinutes / 60; //Dhuhr
-			if (this.methodParams[this.calcMethod][1] == 1) // Maghrib
-				times[5] = times[4] + this.methodParams[this.calcMethod][2] / 60.0;
-			if (this.methodParams[this.calcMethod][3] == 1) // Isha
-				times[6] = times[5] + this.methodParams[this.calcMethod][4] / 60.0;
+			if (this.methodParameters[this.calculationMethod][1] == 1) // Maghrib
+				times[5] = times[4] + this.methodParameters[this.calculationMethod][2] / 60.0;
+			if (this.methodParameters[this.calculationMethod][3] == 1) // Isha
+				times[6] = times[5] + this.methodParameters[this.calculationMethod][4] / 60.0;
 
 			if (this.adjustHighLats != None)
 			{
@@ -402,7 +376,7 @@ namespace Muazun
 		{
 			string[] formatted = new String[times.Length];
 
-			if (this.timeFormat == Floating)
+			if (this.timeFormat == TimeFormat.Floating)
 			{
 				for (int i = 0; i < times.Length; ++i)
 				{
@@ -412,9 +386,9 @@ namespace Muazun
 			}
 			for (int i = 0; i < 7; i++)
 			{
-				if (this.timeFormat == Time12)
+				if (this.timeFormat == TimeFormat.Time12)
 					formatted[i] = this.FloatToTime12(times[i], true);
-				else if (this.timeFormat == Time12NS)
+				else if (this.timeFormat == TimeFormat.Time12NS)
 					formatted[i] = this.FloatToTime12NS(times[i]);
 				else
 					formatted[i] = this.FloatToTime24(times[i]);
@@ -545,7 +519,10 @@ namespace Muazun
 
 		public static void Sample()
         {
-			var p = new NamazTime();
+			var p = new NamazTimeCalculatorBuilder()
+				.WithCalculationMethod(CalculationMethod.ISNA)
+				.WithAsarMethod(JuristicMethod.Hanafi)
+				.Build();
 			double lo = 25;
 			double la = 55;
 			int y = 0, m = 0, d = 0, tz = 0;
@@ -557,8 +534,6 @@ namespace Muazun
 			tz = (DateTime.UtcNow - DateTime.Now).Hours;
 			String[] s;
 
-			p.SetCalcMethod(2);
-			p.SetAsrMethod(0);
 			s = p.GetDatePrayerTimes(y, m, d, lo, la, tz);
 			for (int i = 0; i < s.Length; ++i)
 			{
