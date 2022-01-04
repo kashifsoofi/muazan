@@ -288,3 +288,7 @@ __pycache__/
 *.xsd.cs
 .DS_Store
 appsettings.Development.json
+
+.dart_tool/
+.packages
+build/
